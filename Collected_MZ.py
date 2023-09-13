@@ -424,8 +424,6 @@ def twins_agree(g):
     
 #In the diagonal analysis of a graph with a pair of adjacent twins, checks for a one or a two on the diagonal entry corresponding to them.
 #Deletes one, finds the minrank of G-v.  Chooses the smallest one, computes minrank G since adding back v shouldn't change minrank
-#In the diagonal analysis of a graph with a pair of adjacent twins, checks for a one or a two on the diagonal entry corresponding to them.
-#Deletes one, finds the minrank of G-v.  Chooses the smallest one, computes minrank G since adding back v shouldn't change minrank
 def twinningM_equal_Z(g,max_null=False,adjacent=True):
     k=1 #corresponds to default adjacent=True, check for this entry in diagonal analysis
     n=g.order() #save original size of graph
@@ -453,10 +451,10 @@ def twinningM_equal_Z(g,max_null=False,adjacent=True):
     for v in good_vs:
         gg=deepcopy(g)
         gg.delete_vertex(v)
-        mudict.append(get_mu_from_dict(gg))    #Get minrank(G-v) from list
+        mudict.append(get_mr_from_list(gg))    #Get mr(G-v) from list
     if len(mudict)>0: #ie viable vertices to delete
         mr=min(mudict)
-        M=n-mr #find minrank(g-v), since g has same minrank use it to compute M(g)
+        M=n-mr #take max nullity of twin sets, add one for when v is added back
         if max_null==True:
             return M
         else:    
@@ -465,5 +463,4 @@ def twinningM_equal_Z(g,max_null=False,adjacent=True):
             else:
                 return False      
     else:
-        return -1 #no twins or good_vs empty   
-           
+        return -1 #no twins or good_vs empty
