@@ -6,7 +6,7 @@ Created on Mon Sep 11 12:34:04 2023
 @author: mark
 """
 
-def multi_sshow2(all_graphs,each_row=0,text=None,final_figsize=None):
+def multi_sshow_ext(all_graphs,each_row=0,text=None,final_figsize=None):
     """
     Input:
         all_graphs: a list of graph strings
