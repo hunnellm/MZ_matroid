@@ -17,7 +17,7 @@ def loadurl(url, timeout=5):
     sage.repl.load.load(temp_name, globals())
     os.unlink(temp_name)
 
-def load_all(mr_JG=True, minrank_aux=True, timeout=5, load_func='load', local=False):
+def load_all(mr_JG=True, minrank_aux=True, MZ_matroid=True, timeout=5, load_func='load', local=False):
     # load_func can be 'loadurl' (default) or 'load'
     # local can be False, True, or 'your_path_to_libraries' (e.g., '~/Download/')
     if load_func == 'load':
@@ -54,6 +54,14 @@ def load_all(mr_JG=True, minrank_aux=True, timeout=5, load_func='load', local=Fa
             URL = local + 'minrank_aux-master/'
 
         files = ['general_Lib.sage','oc_diag_analysis.sage','xi_dict.py','mu_dict.py','SXP.sage','matrix_forcing.py']
+        for f in files:
+            print("Loading %s..."%f);
+            func(URL+f);
+            
+    if MZ_matroid:
+        URL = 'https://raw.githubusercontent.com/hunnellm/MZ_matroid/main/'
+
+        files = ['Collected_MZ.py']
         for f in files:
             print("Loading %s..."%f);
             func(URL+f);
