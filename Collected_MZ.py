@@ -371,7 +371,7 @@ def multi_sshow(all_graphs,each_row=0,text=None,final_figsize=None):
                 text+=str(find_gZ(g));
                 text+=", "
                 text+="Zhat(g)=";
-                text+=str(find_EZ( g, oc_rule=False))
+                text+=str(find_EZ( g ))
                 text+=",   "
         if final_figsize==None:
             final_figsize=[12,2];
