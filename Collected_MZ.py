@@ -135,3 +135,57 @@ def twinningM_equal_Z(g,max_null=False,adjacent=True):
                 return False      
     else:
         return -1 #no twins or good_vs empty
+##overwrite of previous find_mu(g), decreasing upper bound to the zero forcing number
+def find_mu(g):
+    """
+    Try to find mu for a given graph, by low-value tests, such 
+    as planarity.
+    
+    INPUT
+    g: a graph
+    
+    OUTPUT
+    mu, if the exact value is determined;
+    (low_bound,up_bound), otherwise.
+    """
+    n=g.order();
+    low_bound,up_bound=0,n;
+    min_deg=n-1;
+    max_deg=0;
+    ## Get min/max_deg
+    for i in g.vertices():
+        deg=g.degree(i);
+        if deg<min_deg:
+            min_deg=deg;
+        if deg>max_deg:
+            max_deg=deg; 
+    ## Decrease up_bound
+    if min_deg==n-1:
+        return n-1;
+    up_bound=find_gZ(g);     
+    ## This up_bound does not apply for K2,
+    ## but doesn't change the result.
+    ## Increase low_bound         
+    if n==1:
+        return 0;
+    if g.is_forest():
+        if max_deg<=2:
+            return 1;
+        return 2;                
+    if g.is_circular_planar():
+        return 2;
+    if g.is_planar():
+        return 3;
+    low_bound=4;
+    for p in PetersenFamily:
+        if has_minor(g,p):
+            low_bound=5;
+    if low_bound==4:
+        return 4;
+    ## No idea now.
+    up_bound=min(up_bound,mu_upper(g));
+    if low_bound==up_bound:
+        return low_bound;
+    return low_bound;
+## Need has_minor function and PetersenFamily list.
+## Minor algorithm works slow.
