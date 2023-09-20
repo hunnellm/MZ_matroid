@@ -186,6 +186,6 @@ def find_mu(g):
     up_bound=min(up_bound,mu_upper(g));
     if low_bound==up_bound:
         return low_bound;
-    return low_bound;
+    return (low_bound,up_bound);
 ## Need has_minor function and PetersenFamily list.
 ## Minor algorithm works slow.
