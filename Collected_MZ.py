@@ -189,3 +189,26 @@ def find_mu(g):
     return (low_bound,up_bound);
 ## Need has_minor function and PetersenFamily list.
 ## Minor algorithm works slow.
+
+def simplicial_vertices(g):
+    simp_verts=[]
+    for v in g.vertices():
+        if g.is_clique(g.neighbors(v)):
+            simp_verts.append(v)
+    return simp_verts
+
+def simplicial_vertex_minrank(g):
+    V=simplicial_vertices(g)
+    diag=diagonal_analysis(g)
+    count=0
+    if len(V)==0 or g.order()>8:
+        return -1
+    for v in V:
+        #print v, diag
+        if diag[v]==0:
+            count+=1
+            gg=g.delete_vertex(v)
+            return get_mr_from_list(gg) 
+    if count == 0:
+        #print "no viable simplicial vertices"
+        return -1
