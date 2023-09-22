@@ -209,6 +209,18 @@ def simplicial_vertex_minrank(g):
             count+=1
             gg=g.delete_vertex(v)
             return get_mr_from_list(gg) 
+
+def has_forbidden_minor_3_connected_m_equal_3( g , return_minor = False ):
+    forb_minors_M_equal_3= [ 'GLCiKS', 'FxVKg', 'Ezuw', 'D|{', 'EBz_' ]     #[ Q3-, Q3Ydelta, K222-, K5-, K33-
+    if g.edge_connectivity()==3:
+        for stg in forb_minors_M_equal_3:
+            m=Graph(stg)
+            if has_minor(g,m):
+                if return_minor == True:
+                    return m.graph6_string()
+                return True
+    else:
+        return False    
     if count == 0:
         #print "no viable simplicial vertices"
         return -1
