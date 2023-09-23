@@ -55,11 +55,11 @@ def multi_sshow_zfs(all_graphs,each_row=0,text=None,final_figsize=None):
             cache.append(stg);
             period+=1;
             if period==each_row:
-                multi_sshow(cache);
+                multi_sshow_zfs(cache);
                 cache=[];
                 period=0;
         if cache!=[]:
-            multi_sshow(cache)
+            multi_sshow_zfs(cache)
             
 def closed_nbr(g,v):
     nbrs=[]
