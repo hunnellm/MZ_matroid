@@ -212,7 +212,7 @@ def simplicial_vertex_minrank(g):
 
 def has_forbidden_minor_3_connected_m_equal_3( g , return_minor = False ):
     forb_minors_M_equal_3= [ 'GLCiKS', 'FxVKg', 'Ezuw', 'D|{', 'EBz_' ]     #[ Q3-, Q3Ydelta, K222-, K5-, K33-
-    if g.edge_connectivity()==3:
+    if g.vertex_connectivity()==3:
         for stg in forb_minors_M_equal_3:
             m=Graph(stg)
             if has_minor(g,m):
