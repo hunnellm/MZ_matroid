@@ -545,4 +545,193 @@ def convert_to_simple_matrix(mat):
         m[i,i]=0            
     return m   
 
+def two_sep_minrank(g):
+    if g.vertex_connectivity() == 2:
+        #print 'G:'
+        #g.plot().show(figsize=(2,2))
+        L=g.vertex_connectivity(sets=True)
+        # construction G1, G2 then computing mr
+        G=g.copy()
+        G1=g.copy()
+        G2=g.copy()
+        G1.delete_vertices(L[2][1])
+        G2.delete_vertices(L[2][0])
+        if L[1][1] in G.neighbors(L[1][0]):
+            G1.delete_edge(L[1][1],L[1][0])
+        #print 'r1 = ',L[1][0] 
+        #print 'r2 = ',L[1][1]
+        #print '-------------------------------------------'
+        #print 
+        #print 'G1:'
+        #G1.plot().show(figsize=(2,2))
+        mrG1 = minrank_bounds(G1)[0]
+        #print 'mr(G1) = ', mrG1
+        #print '-------------------------------------------'
+        #print
+        #print 'G2:'
+        #G2.plot().show(figsize=(2,2))
+        mrG2 =  minrank_bounds(G2)[0]
+        #print 'mr(G2) = ', mrG2
 
+        #constructing H1, H2 then computing mr
+        H1=G1.copy()
+        H2=G2.copy()
+        H2.allow_multiple_edges(True)
+        H1.add_edge(L[1][1],L[1][0])
+        H2.add_edge(L[1][1],L[1][0])
+        #print '-------------------------------------------'
+        #print 
+        #print 'H1:'
+        #H1.plot().show(figsize=(2,2))
+        mrH1 = minrank_bounds(H1)[0]
+        #print 'mr(H1) = ', mrH1
+        #print '-------------------------------------------'
+        #print 
+        #print 'H2:'
+        #H2.plot().show(figsize=(2,2))
+        if H2.has_multiple_edges() == True:
+            aH2=H2.copy()
+            bH2=H2.copy()
+            aH2.delete_edge(aH2.multiple_edges()[0])
+            #aH2.plot().show()
+            bedge=bH2.multiple_edges()[0]
+            bH2.delete_edge(bedge)
+            bH2.delete_edge(bedge)
+            #bH2.plot().show()
+            mrH2=min(minrank_bounds(aH2)[0],minrank_bounds(bH2)[0])
+        else:
+            mrH2=minrank_bounds(H2)[0]
+        #print 'mr(H2) = ',mrH2
+
+        #constructing G1/r1r2, G2/r1r2 then computing mr
+        G1r1r2 = G1.copy()
+        G2r1r2 = G2.copy()
+        G1r1r2.allow_multiple_edges(True)
+        G2r1r2.allow_multiple_edges(True)
+        G1r1r2.merge_vertices(L[1])
+        #print '-------------------------------------------'
+        #print
+        #print 'G1/r1r2:'
+        #G1r1r2.plot().show(figsize=(2,2))
+
+        if G1r1r2.has_multiple_edges() == True:
+            mG1r1r2=G1r1r2.copy()
+            mG1r1r2.allow_multiple_edges(False)
+            M=set(G1r1r2.multiple_edges())
+            S=Subsets(M)
+            #print S.list()
+            ML=[]
+            k=len(S)
+            for i in range(k):
+                ML.append(mG1r1r2.edges())
+            #print ML
+            mrML=[]
+            for i in range(k):
+                g=Graph([G1r1r2.vertices(),list(set(ML[i]).difference(S[i]))])
+                #g.show(figsize=(2,2))
+                mrML.append(minrank_bounds(g)[0])
+            #print mrML
+            #print min(mrML)
+            mrG1r1r2 = min(mrML)
+        else:
+            mrG1r1r2 = minrank_bounds(G1r1r2)[0]
+        #print 'mr(G1/r1r2) = ', mrG1r1r2
+        G2r1r2.merge_vertices(L[1])
+        #print '-------------------------------------------'
+        #print
+        #print 'G2/r1r2:'
+        #G2r1r2.plot().show(figsize=(2,2))
+        if G2r1r2.has_multiple_edges() == True:
+            mG2r1r2=G2r1r2.copy()
+            mG2r1r2.allow_multiple_edges(False)
+            M=set(G2r1r2.multiple_edges())
+            S=Subsets(M)
+            #print S.list()
+            ML=[]
+            k=len(S)
+            for i in range(k):
+                ML.append(mG2r1r2.edges())
+            #print ML
+            mrML=[]
+            for i in range(k):
+                g=Graph([G2r1r2.vertices(),list(set(ML[i]).difference(S[i]))])
+                #g.show(figsize=(2,2))
+                mrML.append(minrank_bounds(g)[0])
+            #print mrML
+            #print min(mrML)
+            mrG2r1r2 = min(mrML)
+        else:
+            mrG2r1r2 = minrank_bounds(G2r1r2)[0]
+        #print
+        #print G2r1r2.multiple_edges()
+        #print 'mr(G2/r1r2) = ', mrG2r1r2
+
+        #constructing G1-r1, G2-r1 then computing mr
+        G1minusr1 = G1.copy()
+        G2minusr1 = G2.copy()
+        G1minusr1.delete_vertex(L[1][0])
+        #print '-------------------------------------------'
+        #print
+        #print 'G1-r1:'
+        #G1minusr1.plot().show(figsize=(2,2))
+        mrG1minusr1 = minrank_bounds(G1minusr1)[0]
+        #print 'mr(G1-r1) = ',mrG1minusr1
+        G2minusr1.delete_vertex(L[1][0])
+        #print '-------------------------------------------'
+        #print
+        #print 'G2-r1:'
+        #G2minusr1.plot().show(figsize=(2,2))
+        mrG2minusr1 = minrank_bounds(G2minusr1)[0]
+        #print 'mr(G2-r1) = ',mrG2minusr1
+
+        #constructing G1-r2, G2-r2 then computing mr
+        G1minusr2 = G1.copy()
+        G2minusr2 = G2.copy()
+        G1minusr2.delete_vertex(L[1][1])
+        #print '-------------------------------------------'
+        #print
+        #print 'G1-r2:'
+        #G1minusr2.plot().show(figsize=(2,2))
+        mrG1minusr2 = minrank_bounds(G1minusr2)[0]
+        #print 'mr(G1-r2) = ',mrG1minusr2
+        G2minusr2.delete_vertex(L[1][1])
+        #print '-------------------------------------------'
+        #print
+        #print 'G2-r2:'
+        #G2minusr2.plot().show(figsize=(2,2))
+        mrG2minusr2 = minrank_bounds(G2minusr2)[0]
+        #print 'mr(G2-r2) = ',mrG2minusr2
+
+        #constructing G1-R, G2-R then computing mr
+        G1minusR = G1.copy()
+        G2minusR = G2.copy()
+        G1minusR.delete_vertices(L[1])
+        #print '-------------------------------------------'
+        #print 
+        #print 'G1-R:'
+        #G1minusR.plot().show(figsize=(2,2))
+        mrG1minusR = minrank_bounds(G1minusR)[0]
+        #print 'mr(G1-R) = ',mrG1minusR
+        G2minusR.delete_vertices(L[1])
+        #print '-------------------------------------------'
+        #print
+        #print 'G2-R:'
+        #G2minusR.plot().show(figsize=(2,2))
+        mrG2minusR = minrank_bounds(G2minusR)[0]
+        mr=min(mrG1 + mrG2,mrH1 + mrH2,mrG1r1r2 + mrG2r1r2 + 2,mrG1minusr1 + mrG2minusr1 + 2,mrG1minusr2 + mrG2minusr2 + 2,mrG1minusR + mrG2minusR + 4)
+        #print 'mr(G2-R) = ',mrG2minusR
+        #print
+        #print
+
+        #computing 2-separation minimum rank formula a la van der Holst
+        #print 'mr(G1)+mr(G2)             = ', mrG1 + mrG2
+        #print 'mr(H1)+mr(H2)             = ', mrH1 + mrH2
+        #print 'mr(G1/r1r2)+mr(G2/r1r2)+2 = ', mrG1r1r2 + mrG2r1r2 + 2
+        #print 'mr(G1-r1)+mr(G2-r1)+2     = ', mrG1minusr1 + mrG2minusr1 + 2
+        #print 'mr(G1-r2)+mr(G2-r2)+2     = ', mrG1minusr2 + mrG2minusr2 + 2
+        #print 'mr(G1-R)+mr(G2-R)+4       = ', mrG1minusR + mrG2minusR + 4
+        #print '---------------------------------------------'
+        #print 'mr(G)                     = ', mr
+    else:
+        print 'not 2-separable'
+    return mr;
