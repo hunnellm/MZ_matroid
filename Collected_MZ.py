@@ -511,6 +511,57 @@ def lift_minrank_matrix( g , a ,null_vec=vector([1,1,1,1,1,1,1]),override=False)
 
     return P*G3*P.transpose() 
     #return G3
+def lift_minrank_matrix_M( g , M ,null_vec=vector([1,1,1,1,1,1,1]),override=False):
+    #g a graph
+    #M a minrank matrix for an induced subgraph of G
+    GG = deepcopy(M)
+    h=convert_to_simple_graph(GG)
+    n=g.order()
+    deleted_vertex=g.vertices()
+    if g.subgraph_search_count(h,induced=True)==0:
+        return False
+    if g.subgraph_search(h,induced=True).vertices()==None:
+        return False
+    for v in g.subgraph_search(h,induced=True).vertices():
+        deleted_vertex.remove(v)
+    #print "deleted-vertex",deleted_vertex
+    m=deepcopy(GG)
+    null_list=[]
+    #for w in [2]:
+    P=determine_P(g,h,deleted_vertex[0]).transpose()
+    #print "P=",P
+    #p=Permutation(P)
+    if missing_neighbors(g, deleted_vertex[0])==[]:
+        print "dominating vertex"
+    for w in missing_neighbors(g, deleted_vertex[0]):
+        #print "missing neighbor",w
+        #if return_perm(w,P.transpose()) ==7:
+            #print "error to figure out"
+        if return_perm(w,P.transpose()) <>7:
+            null_list.append(list(m[return_perm(w,P.transpose())]))
+    kern=matrix(null_list).right_kernel_matrix()
+    #print kern
+    v=sum(kern.rows())
+    if null_list==[] or override==True:
+        #print "empty null list"
+        v=null_vec
+    #print v
+    w=v*GG
+    #print w
+    list(w*matrix(v).transpose())[0]
+    ww=list(w)
+    ww.insert(n,list(w*matrix(v).transpose())[0])
+    G2=GG.insert_row(n-1,w)
+    #print "parent=",G2.parent()
+    G3=G2.transpose().insert_row(n-1,ww).transpose()
+    #print "G3=",G3
+    #g.show()
+    #g.delete_vertex(deleted_vertex[0])
+    #g.show()
+    #print "P=",P
+
+    return P*G3*P.transpose() 
+    #return G3
     
     
 def check_in_SG(g,A,prnt=False):
