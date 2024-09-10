@@ -786,3 +786,218 @@ def two_sep_minrank(g):
     else:
         print 'not 2-separable'
     return mr;
+
+def flatten(l):
+  out = []
+  for item in l:
+    if isinstance(item, (list, tuple)):
+      out.extend(flatten(item))
+    else:
+      out.append(item)
+  return out
+
+#Input: a symmetric matrix A ( could also do combinatorially symmetric by slight alteration )
+#Output: Graphs G' where A in S(G) can be lifted to by adding a vertex and where there exists a matrix in S(G') with the same rank
+def Col_Supp_Lifts(A):
+   
+    #print 'rank = ', A.rank(), '\n'
+    #print A, '\n'
+    #n number of rows/columns in A
+    n=len(list(A))
+   
+    #constructing the graph for A
+    #print 'G(A) = '
+    G=Graph([])
+    G.add_vertices(range(n))
+    for i in range(0,n):
+        for j in range(i+1,n):
+            if A[i][j] != 0:
+                G.add_edge((i,j))
+    #G.show()
+   
+    #print '===========================================================', '\n', 'Minimal support lifts for A ', '\n'
+
+    #requires sage matroid package, sage.matroids.advanced import *
+    kerA=Matrix(A.kernel().basis())
+
+    #Computing matroid data for the null space of the null space
+
+    M=Matroid(kerA)
+    # The list of circuits for ker(A).  This should be the minimal supports of the column space.
+    CM=sorted([sorted(C) for C in M.circuits()])
+    #print CM
+
+#     for i in range(len(CM)):
+#         H=deepcopy(G)
+#         H.add_vertex(7)
+#         for j in range(len(CM[i])):
+#             H.add_edges([(7,CM[i][j])])
+        #H.show()
+        #print H.graph6_string(), ' with neighbors of 7 ', CM[i]
+       
+    #Construct all unions of supports in CM
+    N=[i for i in range(len(CM))]
+    S=[list(s) for s in subsets(N)]
+    #print 'number of unions of column supports = ', len(S)
+
+    # m=3500
+    # print S[m], '\n'
+    # U=[CM[k] for k in S[m]]
+    # print list(set(flatten(U)))
+
+    L=[]
+
+
+    for j in range(len(S)):
+         for k in range(len(S[j])):
+            U=[CM[k] for k in S[j]]
+            fU=list( set( flatten(U)))
+            H=deepcopy(G)
+            H.add_vertex(7)
+            for i in range(len(fU)):
+                H.add_edges([(7,fU[i])])
+            #H.show()
+            #print H.graph6_string()
+            L.append(H.graph6_string())
+    #Gets rid of duplicates in L
+    L_new = list(set(L))
+
+    m=len(L_new)
+    L_new_remove=[]
+    for i in range(m):
+        for j in range(i+1,m):
+            if Graph(L_new[i]).is_isomorphic(Graph(L_new[j])):
+                L_new_remove.append(L_new[j])
+    #print 'number of unique unions = ', len(L_new)
+    L_new_new = list( set(L_new).difference( set(L_new_remove)) )
+    #print 'number of non-isomorphic lifting graphs = ', len( L_new_new )
+    #print list( L_new_new )
+   
+    return L_new_new;
+
+counter = 0
+determined = 0
+for g in graphs(7):
+    if g.vertex_connectivity()>=3:
+        if find_Z(g)==4:
+            is_min_rank_three = False
+            counter += 1
+            is_optimal_edge_set = False
+            for edge in g.edges():
+                if not is_optimal_edge_set:
+                    g3 = g.copy()
+                    g3.delete_edge(edge)
+                    canon_label = g3.canonical_label().graph6_string()
+                    if min_rank_dict.get(canon_label) == 2:
+                        is_min_rank_three = True
+                        is_optimal_edge_set = True
+                        print(canon_label)
+                        print(edge)
+                        print('The Graph has minimum rank 3')
+                        g.show()
+                        g3.show()
+                        determined += 1
+            for edge in g.complement().edges():
+                 if not is_optimal_edge_set:
+                    g3 = g.copy()
+                    g3.add_edge(edge)
+                    canon_label = g3.canonical_label().graph6_string()
+                    if min_rank_dict.get(canon_label) == 2:
+                        is_min_rank_three = True
+                        is_optimal_edge_set = True
+                        print(edge)
+                        print(canon_label)
+                        print('The Graph has minimum rank 3')
+                        g.show()
+                        g3.show()
+                        determined += 1
+            set_of_three = Combinations(g.vertices(),3)
+            for bunch in set_of_three:
+                if not is_min_rank_three:
+                    h=g.subgraph(bunch)
+                    if len(h.edges())==3: 
+                        g1 = g.copy()
+                        for edge in h.edges():
+                            g1.delete_edge(edge)
+                        possible_edges = Combinations(bunch,2)
+                        edge_combinations = Combinations(possible_edges)
+                        is_optimal_edge_set = False
+                        for edge_set in edge_combinations:
+                            if not is_optimal_edge_set:
+                                g2 = g1.copy()
+                                for edge in edge_set:
+                                    g2.add_edge(edge)
+                                canon_label = g2.canonical_label().graph6_string()
+                                if min_rank_dict.get(canon_label) == 2:
+                                    is_min_rank_three = True
+                                    is_optimal_edge_set = True
+                                    print(canon_label)
+                                    print(bunch)
+                                    print('The Graph has minimum rank 3')
+                                    g.show()
+                                    g2.show()
+                                    determined += 1
+                    elif len(h.edges())==2:
+                        g1=g.copy()
+                        for edge in h.edges():
+                            g1.delete_edge(edge)
+                        for edge in h.complement().edges():
+                            g1.add_edge(edge)
+                        edge_combinations = Combinations(h.edges())
+                        is_optimal_edge_set = False
+                        for edge_set in edge_combinations:
+                            if not is_optimal_edge_set:
+                                g2 = g1.copy()
+                                for edge in edge_set:
+                                    g2.add_edge(edge)
+                                canon_label = g2.canonical_label().graph6_string()
+                                if min_rank_dict.get(canon_label) == 2:
+                                    is_min_rank_three = True
+                                    is_optimal_edge_set = True
+                                    print(canon_label)
+                                    print(bunch)
+                                    print('The Graph has minimum rank 3')
+                                    g.show()
+                                    g2.show()
+                                    determined += 1
+                    elif len(h.edges())==1:
+                        g1=g.copy()
+                        for edge in h.edges():
+                            g1.delete_edge(edge)
+                        for edge in h.complement().edges():
+                            g1.add_edge(edge)
+                        edge_combinations = Combinations(h.edges())
+                        is_optimal_edge_set = False
+                        for edge_set in edge_combinations:
+                            if not is_optimal_edge_set:
+                                g2 = g1.copy()
+                                for edge in edge_set:
+                                    g2.add_edge(edge)
+                                canon_label = g2.canonical_label().graph6_string()
+                                if min_rank_dict.get(canon_label) == 2:
+                                    is_min_rank_three = True
+                                    is_optimal_edge_set = True
+                                    print(canon_label)
+                                    print(bunch)
+                                    print('The Graph has minimum rank 3')
+                                    g.show()
+                                    g2.show()  
+                                    determined += 1
+                    elif len(h.edges())==0:
+                        g1=g.copy()
+                        for edge in h.complement().edges():
+                            g1.add_edge(edge)
+                        canon_label = g1.canonical_label().graph6_string()
+                        if min_rank_dict.get(canon_label) == 2:
+                            is_min_rank_three = True
+                            print(canon_label)
+                            print(bunch)
+                            print('The Graph has minimum rank 3')
+                            g.show()
+                            g2.show()   
+                            determined += 1
+            #if not is_min_rank_three:
+                #g.show()
+
+print(counter)
+print(determined)
