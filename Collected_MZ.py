@@ -3,7 +3,7 @@
 """
 Created on Mon Sep 11 12:34:04 2023
 
-@author: mark
+@author: mark hunnell
 """
 
 def multi_sshow_zfs(all_graphs,each_row=0,text=None,final_figsize=None):

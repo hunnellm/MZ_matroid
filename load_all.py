@@ -7,7 +7,7 @@ Created on Wed Sep 13 12:28:47 2023
 """
 
 # increase timeout seconds
-def loadurl(url, timeout=5):
+def loadurl(url,  timeout=5):
     temp_name = tmp_filename() + '.' + os.path.splitext(url)[1][1:]
 
     from urllib.request import urlopen
