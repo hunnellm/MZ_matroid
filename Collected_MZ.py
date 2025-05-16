@@ -483,7 +483,7 @@ def lift_minrank_matrix( g , a ,null_vec=vector([1,1,1,1,1,1,1]),override=False)
     P=determine_P(g,h,deleted_vertex[0]).transpose()
     #p=Permutation(P)
     if missing_neighbors(g, deleted_vertex[0])==[]:
-        print "dominating vertex"
+        #print "dominating vertex"
     for w in missing_neighbors(g, deleted_vertex[0]):
         #print "missing neighbor",w
         #if return_perm(w,P.transpose()) ==7:
@@ -501,7 +501,7 @@ def lift_minrank_matrix( g , a ,null_vec=vector([1,1,1,1,1,1,1]),override=False)
     ww=list(w)
     ww.insert(7,list(w*matrix(v).transpose())[0])
     G2=GG.insert_row(7,w)
-    print "parent=",G2.parent()
+    #print "parent=",G2.parent()
     G3=G2.transpose().insert_row(7,ww).transpose()
     #print "G3=",G3
     #g.show()
@@ -532,7 +532,7 @@ def lift_minrank_matrix_M( g , M ,null_vec=vector([1,1,1,1,1,1,1]),override=Fals
     #print "P=",P
     #p=Permutation(P)
     if missing_neighbors(g, deleted_vertex[0])==[]:
-        print "dominating vertex"
+        #print "dominating vertex"
     for w in missing_neighbors(g, deleted_vertex[0]):
         #print "missing neighbor",w
         #if return_perm(w,P.transpose()) ==7:
@@ -571,7 +571,7 @@ def check_in_SG(g,A,prnt=False):
     m2=g.adjacency_matrix()
     #print "m2=",m2
     if prnt ==True:
-        print m1-m2
+        print(m1-m2)
     if m1-m2==matrix(n,n):
         return True
     return False
@@ -784,7 +784,7 @@ def two_sep_minrank(g):
         #print '---------------------------------------------'
         #print 'mr(G)                     = ', mr
     else:
-        print 'not 2-separable'
+        print('not 2-separable')
     return mr;
 
 def flatten(l):
@@ -891,9 +891,9 @@ for g in graphs(7):
                     if min_rank_dict.get(canon_label) == 2:
                         is_min_rank_three = True
                         is_optimal_edge_set = True
-                        print(canon_label)
-                        print(edge)
-                        print('The Graph has minimum rank 3')
+                        #print(canon_label)
+                        #print(edge)
+                        #print('The Graph has minimum rank 3')
                         g.show()
                         g3.show()
                         determined += 1
