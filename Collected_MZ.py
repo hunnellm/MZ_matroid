@@ -482,7 +482,7 @@ def lift_minrank_matrix( g , a ,null_vec=vector([1,1,1,1,1,1,1]),override=False)
     #for w in [2]:
     P=determine_P(g,h,deleted_vertex[0]).transpose()
     #p=Permutation(P)
-    if missing_neighbors(g, deleted_vertex[0])==[]:
+    #if missing_neighbors(g, deleted_vertex[0])==[]:
         #print "dominating vertex"
     for w in missing_neighbors(g, deleted_vertex[0]):
         #print "missing neighbor",w
