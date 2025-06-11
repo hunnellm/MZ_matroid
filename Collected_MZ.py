@@ -492,7 +492,7 @@ def lift_minrank_matrix( g , a ,null_vec=vector([1,1,1,1,1,1,1]),override=False)
         #print "missing neighbor",w
         #if return_perm(w,P.transpose()) ==7:
             #print "error to figure out"
-        if return_perm(w,P.transpose()) <>7:
+        if return_perm(w,P.transpose()) !=7:
             null_list.append(list(m[return_perm(w,P.transpose())]))
     kern=matrix(null_list).right_kernel_matrix()
     v=sum(kern.rows())
@@ -541,7 +541,7 @@ def lift_minrank_matrix_M( g , M ,null_vec=vector([1,1,1,1,1,1,1]),override=Fals
         #print "missing neighbor",w
         #if return_perm(w,P.transpose()) ==7:
             #print "error to figure out"
-        if return_perm(w,P.transpose()) <>7:
+        if return_perm(w,P.transpose()) !=7:
             null_list.append(list(m[return_perm(w,P.transpose())]))
     kern=matrix(null_list).right_kernel_matrix()
     #print kern
