@@ -1005,3 +1005,36 @@ for g in graphs(7):
 
 print(counter)
 print(determined)
+
+
+# Minimal Forts Function
+# Author: Derek Hanely
+# Last Updated: March 17, 2024
+def minForts(G):
+    """
+    A brute-force algorithm for producing all minimal forts of a graph.
+
+    INPUT: A simple, undirected graph G.
+
+    OUTPUT: Returns a list of the minimal forts of G.
+    """
+    V=G.vertices(sort=True)
+    forts=[]
+    for F in powerset(V): # check if F is a fort of G
+        if len(F)<=1: continue
+        for u in Set(V).difference(Set(F)):
+            neighbors = G.neighbors(u)
+            if len(Set(F).intersection(Set(neighbors)))==1: break
+        else:
+            forts.append(F)
+    uni_forts=[]
+    for x in forts:
+        if x not in uni_forts:
+            uni_forts.append(x)
+
+    min_forts=deepcopy(uni_forts)
+    for x in uni_forts: # minimality check
+        if any((Set(x).issuperset(Set(y)) and y!=x) for y in uni_forts):
+            min_forts.remove(x)
+
+    return min_forts
