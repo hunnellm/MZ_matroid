@@ -403,7 +403,7 @@ G[1212]=Matrix([(0, 4, -2, 3, 2, 1, 0), (4, -1, 1, 0, 0, 1, 4), (-2, 1,
 def subgraph_finder(h,llist):
     container=[]
     for i in range(len(llist)):
-            g=Graph(list_udt[i])
+            g=Graph(llist[i])
             if g.subgraph_search_count(h,induced=True)>0:
                 #print i
                 container.append(i)
